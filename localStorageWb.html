@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>微博发布效果</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .weibo {
+        width: 600px;
+        border: 1px solid #ccc;
+
+        margin: 100px auto;
+        padding: 10px;
+      }
+
+      .weibo-text {
+        width: 590px;
+        height: 140px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        outline: none;
+        resize: none;
+      }
+
+      .weibo-text:focus {
+        border-color: #f60;
+      }
+
+      .weibo-btn {
+        width: 80px;
+        height: 30px;
+        background-color: #f90;
+        color: #fff;
+        border: 0 none;
+        margin-top: 5px;
+        border-radius: 3px;
+        cursor: pointer;
+        outline: 0 none;
+      }
+
+      .weibo-list {
+        padding-top: 10px;
+      }
+
+      .weibo-list li {
+        font-size: 14px;
+        line-height: 30px;
+        border-bottom: 1px dotted #ccc;
+        overflow: hidden;
+      }
+
+      .weibo-list li p {
+        float: left;
+      }
+
+      .weibo-list li span {
+        float: right;
+        cursor: pointer;
+      }
+      .time {
+        margin-right: 35px !important;
+      }
+      .weibo-list li input {
+        height: 24px;
+        line-height: 24px;
+        width: 300px;
+        font-size: 14px;
+        border: 0 none;
+      }
+      .time {
+        margin-right: 10px;
+        font-style: normal;
+        float: right;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="weibo">
+      <textarea class="weibo-text"></textarea>
+      <input class="weibo-btn" value="发布" type="button" />
+      <ul class="weibo-list">
+        <!-- <li>
+            <p class="content">快来收了这九款用上就停不下来的应用吧！！</p>
+            <span class="time"></span>
+            <span class="del">删除</span>
+        </li> -->
+      </ul>
+    </div>
+  </body>
+</html>
+<script>
+  // var dataa = [
+  //     {
+  //         id : (new Date('2019-02-25 08:32:24')).getTime(),
+  //         content:'快来收了这九款用上就停不下来的应用吧！！',
+  //         time : '2019-02-25 08:32:24'
+  //     },
+  //     {
+  //         id : (new Date('2019-02-12 14:12:04')).getTime(),
+  //         content:'超级详细的云南大理自助游攻略',
+  //         time : '2019-02-12 14:12:04'
+  //     },
+  //     {
+  //         id : (new Date('2019-02-09 23:14:37')).getTime(),
+  //         content:'外国最近很火的舞蹈，舒服简单自然，太棒了！',
+  //         time : '2019-02-09 23:14:37'
+  //     }
+  //     ];
+  //     setData(dataa);
+  // localStorage.setItem('mbData',JSON.stringify(arr));
+  var arr = [];
+  var data = "";
+  let ul = document.querySelector(".weibo-list");
+  let btn = document.querySelector(".weibo-btn");
+  let text = document.querySelector(".weibo-text");
+  function getData() {
+    return JSON.parse(localStorage.getItem("data")) || [];
+  }
+  function setData(data) {
+    localStorage.setItem("data", JSON.stringify(data));
+  }
+  function rqTime() {
+    let data = new Date();
+    let y = data.getFullYear();
+    let mo = data.getMonth() + 1;
+    let d = data.getDate();
+    let h = data.getHours();
+    let mi = data.getMinutes();
+    let s = data.getSeconds();
+    y < 10 ? (y = "0" + y) : y;
+    mo < 10 ? (mo = "0" + mo) : mo;
+    d < 10 ? (d = "0" + d) : d;
+    h < 10 ? (h = "0" + h) : h;
+    mi < 10 ? (mi = "0" + mi) : mi;
+    s < 10 ? (s = "0" + s) : s;
+    return y + "-" + mo + "-" + d + " " + h + ":" + mi + ":" + s;
+  }
+  function fn() {
+    let times = rqTime();
+    let content = text.value;
+    text.value = "";
+    arr = getData();
+    ul.innerHTML = "";
+    content ? arr.unshift({ content: content, time: times }) : 0;
+    setData(arr);
+    arr.forEach(function(ele, index) {
+      let temp = index;
+      ul.innerHTML +=
+        "<li>" +
+        '<p class="content">' +
+        ele.content +
+        "</p>" +
+        '<span class="del" data-index=' +
+        temp +
+        " >删除</span>" +
+        '<span class="time">' +
+        ele.time +
+        "</span>" +
+        "</li>";
+    });
+  }
+  fn();
+  text.onkeydown = function(e) {
+    e.preventDefault(); // 阻止默认换行 *****
+    if (e.keyCode == 13 && text.value !== "") {
+      fn();
+    }
+  };
+  btn.addEventListener("click", fn, false);
+  ul.addEventListener("click", function(e) {
+    if (e.target.className == "del") {
+      arr.splice(e.target.dataset.index, 1);
+      setData(arr);
+      fn();
+    }
+  });
+</script>
